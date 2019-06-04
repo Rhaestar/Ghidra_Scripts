@@ -11,11 +11,19 @@ from ghidra.program.model.listing.Listing import *
 
 minAddress = currentSelection.getMinAddress()
 maxAddress = currentSelection.getMaxAddress()
+baseAddress = currentProgram.getImageBase()
+
+print(baseAddress)
+print(minAddress)
+print(maxAddress)
+
+offset = minAddress.getOffset() - baseAddress.getOffset()
+size = maxAddress.getOffset() - minAddress.getOffset()
 
 file_location = currentProgram.getDomainFile().getMetadata()["Executable Location"]
 _, result_file = tempfile.mkstemp()
 
-subprocess.call(["mkyara", "-f", file_location, "-o", str(minAddress.getOffset()), "-s", str(maxAddress.getOffset() - minAddress.getOffset()), "-r", result_file])
+subprocess.call(["mkyara", "-f", file_location, "-o", str(offset), "-s", str(size), "-r", result_file])
 
 with open(result_file) as file:
     print(str(file.read()))
